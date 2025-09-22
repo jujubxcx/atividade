@@ -1,11 +1,9 @@
 public class Aluno {
-    // Atributos
     String nome;
     int matricula;
     double notaAv1;
     double notaAv2;
 
-    // Construtor
     public Aluno(String nome, int matricula, double notaAv1, double notaAv2) {
         this.nome = nome;
         this.matricula = matricula;
@@ -13,7 +11,6 @@ public class Aluno {
         this.notaAv2 = notaAv2;
     }
 
-    // Métodos Getters e Setters
     public String getNome() {
         return nome;
     }
@@ -38,7 +35,6 @@ public class Aluno {
         this.notaAv2 = notaAv2;
     }
 
-    // Mostrar os dados do aluno
     public void mostrarDados() {
         System.out.println("Nome: " + nome);
         System.out.println("Matrícula: " + matricula);
@@ -48,12 +44,10 @@ public class Aluno {
         System.out.println("----------------------");
     }
 
-    // Calcular a média
     public double calcularMedia() {
         return (notaAv1 + notaAv2) / 2;
     }
 
-    // Verificar aprovação (Regra: média >= 7 está aprovado, senão reprovado)
     public void verificarAprovacao() {
         double media = calcularMedia();
         if (media >= 7) {
@@ -62,4 +56,5 @@ public class Aluno {
             System.out.println("❌ O aluno " + nome + " foi REPROVADO com média " + media);
         }
     }
+
 }
