@@ -1,0 +1,60 @@
+public class Fila {
+    int[] elementos;
+    int inicio;
+    int fim;
+    int tamanho;
+
+    public Fila(int capacidade) {
+        elementos = new int[capacidade];
+        inicio = 0;
+        fim = 0;
+        tamanho = 0;
+    }
+
+    public void enqueue(int valor) {
+        if (tamanho == elementos.length) {
+            System.out.println("Fila cheia! Não é possível inserir " + valor);
+            return;
+        }
+        elementos[fim] = valor;
+        fim = (fim + 1) % elementos.length;
+        tamanho++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            System.out.println("Fila vazia! Não é possível remover.");
+            return -1;
+        }
+        int valor = elementos[inicio];
+        inicio = (inicio + 1) % elementos.length;
+        tamanho--;
+        return valor;
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            System.out.println("Fila vazia! Não há primeiro elemento.");
+            return -1; 
+        }
+        return elementos[inicio];
+    }
+
+    public boolean isEmpty() {
+        return tamanho == 0;
+    }
+
+    public static void main(String[] args) {
+        Fila fila = new Fila(5);
+        
+        fila.enqueue(10);
+        fila.enqueue(20);
+        fila.enqueue(30);
+        
+        System.out.println("Primeiro da fila: " + fila.peek());
+        
+        while (!fila.isEmpty()) {
+            System.out.println("Removido: " + fila.dequeue());
+        }
+    }
+}
