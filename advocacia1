@@ -1,0 +1,175 @@
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+
+public class EscritorioAdvocacia1{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        CaseManager manager = new CaseManager();
+
+        System.out.println("===== SISTEMA DE GERENCIAMENTO DE PROCESSOS =====");
+        String opcao;
+
+        do {
+            System.out.println("\nDeseja adicionar um novo processo? (S/N)");
+            opcao = sc.nextLine().trim().toUpperCase();
+
+            if (opcao.equals("S")) {
+                System.out.println("\n--- CADASTRO DE PROCESSO ---");
+
+                System.out.print("ID do processo: ");
+                String id = sc.nextLine();
+
+                System.out.print("Título do processo: ");
+                String titulo = sc.nextLine();
+
+                System.out.print("Nome do cliente: ");
+                String nomeCliente = sc.nextLine();
+                System.out.print("Identificação do cliente (CPF): ");
+                String idCliente = sc.nextLine();
+                Client cliente = new Client(nomeCliente, idCliente);
+
+                System.out.print("Deseja cadastrar um advogado agora? (S/N): ");
+                String respAdv = sc.nextLine().trim().toUpperCase();
+                Lawyer advogado = null;
+
+                if (respAdv.equals("S")) {
+                    System.out.print("Nome do advogado: ");
+                    String nomeAdv = sc.nextLine();
+                    System.out.print("Número da OAB: ");
+                    String oab = sc.nextLine();
+                    advogado = new Lawyer(nomeAdv, oab);
+                }
+
+                CaseProcess novoProcesso;
+                if (advogado == null) {
+                    novoProcesso = new CaseProcess(id, titulo, cliente);
+                } else {
+                    novoProcesso = new CaseProcess(id, titulo, cliente, advogado);
+                }
+
+                manager.addCase(novoProcesso);
+                System.out.println("Processo cadastrado com sucesso!");
+
+            }
+
+        } while (opcao.equals("S"));
+
+        System.out.println("\n===== LISTA DE PROCESSOS CADASTRADOS =====\n");
+        manager.printAll();
+
+        sc.close();
+    }
+}
+
+interface Printable {
+    void print();
+}
+
+abstract class Person implements Printable {
+    private String name;
+    private String id;
+
+    public Person(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public String getName() { return name; }
+    public String getId() { return id; }
+
+    @Override
+    public void print() {
+        System.out.println("Nome: " + name + " | ID: " + id);
+    }
+}
+
+class Client extends Person {
+    public Client(String name, String id) {
+        super(name, id);
+    }
+}
+
+class Lawyer extends Person {
+    public Lawyer(String name, String id) {
+        super(name, id);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Advogado: " + getName() + " | OAB: " + getId());
+    }
+}
+
+class CaseProcess implements Printable {
+    private String caseId;
+    private String title;
+    private Client client;
+    private Lawyer lawyer;
+    private String status;
+    private List<String> notes;
+
+    public CaseProcess(String caseId, String title, Client client) {
+        this.caseId = caseId;
+        this.title = title;
+        this.client = client;
+        this.status = "ABERTO";
+        this.notes = new ArrayList<>();
+    }
+
+    public CaseProcess(String caseId, String title, Client client, Lawyer lawyer) {
+        this(caseId, title, client);
+        this.lawyer = lawyer;
+    }
+
+    public String getCaseId() { return caseId; }
+    public String getStatus() { return status; }
+
+    public void assignLawyer(Lawyer lawyer) {
+        this.lawyer = lawyer;
+        addNote("Advogado atribuído: " + lawyer.getName());
+    }
+
+    public void close(String nota) {
+        this.status = "ENCERRADO";
+        addNote("Encerrado: " + nota);
+    }
+
+    public void addNote(String note) {
+        notes.add(LocalDateTime.now() + " - " + note);
+    }
+
+    @Override
+    public void print() {
+        System.out.println("Processo ID: " + caseId);
+        System.out.println("Título: " + title);
+        System.out.println("Cliente: " + client.getName());
+        System.out.println("Advogado: " + (lawyer != null ? lawyer.getName() : "Não atribuído"));
+        System.out.println("Status: " + status);
+        System.out.println("Notas:");
+        for (String n : notes) System.out.println("  - " + n);
+    }
+}
+
+class CaseManager {
+    private List<CaseProcess> cases = new ArrayList<>();
+
+    public void addCase(CaseProcess p) { cases.add(p); }
+
+    public Optional<CaseProcess> findById(String id) {
+        return cases.stream().filter(c -> c.getCaseId().equals(id)).findFirst();
+    }
+
+    public void printAll() {
+        if (cases.isEmpty()) {
+            System.out.println("Nenhum processo cadastrado.");
+            return;
+        }
+        for (CaseProcess c : cases) {
+            c.print();
+            System.out.println();
+        }
+    }
+}
